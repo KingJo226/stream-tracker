@@ -29,7 +29,6 @@
         }
 
         html { -webkit-text-size-adjust: 100%; }
-
         html, body { min-height: 100%; }
 
         body {
@@ -80,9 +79,7 @@
             50% { transform: translate(40px, -30px) scale(1.15); }
         }
 
-        .container {
-            position: relative; z-index: 2; width: 100%; max-width: 1200px;
-        }
+        .container { position: relative; z-index: 2; width: 100%; max-width: 1200px; }
 
         .header {
             text-align: center; margin-bottom: 28px;
@@ -145,34 +142,31 @@
             animation: cardIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
             transition: box-shadow 0.5s ease, border-color 0.5s ease, transform 0.3s;
             min-width: 0;
+            cursor: pointer;
         }
         .card:hover { transform: translateY(-3px); }
         .card.live {
             border-color: rgba(0,255,136,0.25);
             box-shadow: 0 16px 50px rgba(0,0,0,0.45), 0 0 40px rgba(0,255,136,0.1), inset 0 1px 0 rgba(255,255,255,0.06);
         }
-        .card.removing {
-            animation: cardOut 0.4s cubic-bezier(0.5, 0, 0.75, 0) both;
+        .card.active {
+            border-color: var(--purple);
+            box-shadow: 0 16px 50px rgba(0,0,0,0.45), 0 0 40px rgba(145,71,255,0.25), inset 0 1px 0 rgba(255,255,255,0.06);
         }
+        .card.removing { animation: cardOut 0.4s cubic-bezier(0.5, 0, 0.75, 0) both; }
         @keyframes cardIn {
             from { opacity: 0; transform: translateY(24px) scale(0.96); }
             to   { opacity: 1; transform: translateY(0) scale(1); }
         }
-        @keyframes cardOut {
-            to { opacity: 0; transform: scale(0.85) translateY(-10px); }
-        }
+        @keyframes cardOut { to { opacity: 0; transform: scale(0.85) translateY(-10px); } }
         .card::before {
             content: ''; position: absolute; top: 0; left: 20%; right: 20%;
             height: 2px; background: linear-gradient(90deg, transparent, var(--purple-light), transparent);
             border-radius: 2px; opacity: 0.8;
         }
-        .card.live::before {
-            background: linear-gradient(90deg, transparent, var(--green), transparent);
-        }
+        .card.live::before { background: linear-gradient(90deg, transparent, var(--green), transparent); }
 
-        .card-head {
-            display: flex; align-items: center; gap: 14px; margin-bottom: 16px;
-        }
+        .card-head { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
         .avatar-wrap { position: relative; width: 56px; height: 56px; flex-shrink: 0; }
         .avatar-ring {
             position: absolute; inset: -4px; border-radius: 50%;
@@ -189,12 +183,9 @@
             border: 2px solid rgba(255,255,255,0.1);
             display: flex; align-items: center; justify-content: center;
             font-size: 1.4rem; font-weight: 800; color: var(--purple-light);
-            overflow: hidden; z-index: 1;
-            text-transform: uppercase;
+            overflow: hidden; z-index: 1; text-transform: uppercase;
         }
-        .avatar img {
-            width: 100%; height: 100%; object-fit: cover; display: block;
-        }
+        .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .avatar-letter {
             display: flex; align-items: center; justify-content: center;
             width: 100%; height: 100%;
@@ -205,8 +196,7 @@
         .card-title { flex: 1; min-width: 0; }
         .card-title .name {
             font-size: 1.05rem; font-weight: 800; letter-spacing: -0.3px;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-            color: #fff;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #fff;
         }
         .card-title .handle {
             font-size: 0.75rem; color: #8a8a95; font-weight: 500;
@@ -220,16 +210,12 @@
             border-radius: 10px; color: #ff6b8a; cursor: pointer;
             font-size: 1rem; font-weight: 700; line-height: 1;
             display: flex; align-items: center; justify-content: center;
-            transition: all 0.2s;
-            font-family: inherit;
-            touch-action: manipulation;
+            transition: all 0.2s; font-family: inherit; touch-action: manipulation;
         }
         .remove-btn:hover, .remove-btn:focus-visible {
             background: rgba(255,77,109,0.2);
             border-color: rgba(255,77,109,0.5);
-            color: #fff;
-            transform: scale(1.1);
-            outline: none;
+            color: #fff; transform: scale(1.1); outline: none;
         }
         .remove-btn:active { transform: scale(0.95); }
 
@@ -275,19 +261,14 @@
             display: flex; justify-content: space-between; align-items: center;
             font-size: 0.78rem; color: #a0a0ad; margin-bottom: 8px; gap: 8px;
         }
-        .meta-row > span:first-child {
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
-        }
+        .meta-row > span:first-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
         .meta-row .viewers { color: var(--green); font-weight: 700; white-space: nowrap; }
         .duration-row {
             display: flex; justify-content: space-between; align-items: center;
-            padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.06);
-            font-size: 0.78rem;
+            padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.06); font-size: 0.78rem;
         }
         .duration-row .label-inline { color: #a0a0ad; }
-        .duration-row .duration {
-            color: var(--purple-light); font-weight: 700; font-variant-numeric: tabular-nums;
-        }
+        .duration-row .duration { color: var(--purple-light); font-weight: 700; font-variant-numeric: tabular-nums; }
 
         .empty-state {
             text-align: center; padding: 60px 20px; color: #6b6b78;
@@ -296,16 +277,68 @@
         .empty-state .big { font-size: 3rem; margin-bottom: 12px; opacity: 0.5; }
         .empty-state p { font-size: 0.95rem; }
 
-        .note {
-            text-align: center; font-size: 0.72rem; color: #55555f;
-            margin-top: 28px; line-height: 1.6; padding-bottom: var(--safe-bottom);
-        }
-
+        .note { text-align: center; font-size: 0.72rem; color: #55555f; margin-top: 28px; line-height: 1.6; padding-bottom: var(--safe-bottom); }
         .hidden { display: none !important; }
 
-        /* ============================================
-           Планшеты: уже, но не телефон
-           ============================================ */
+        /* ===== Player + Chat секция ===== */
+        .player-section {
+            margin-top: 32px;
+            animation: cardIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        .player-section.hidden { display: none; }
+        .player-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 12px; gap: 10px; flex-wrap: wrap;
+        }
+        .player-header .now-playing {
+            font-size: 0.95rem; font-weight: 700; color: #fff;
+            display: flex; align-items: center; gap: 8px; min-width: 0;
+        }
+        .player-header .now-playing .live-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: var(--green); box-shadow: 0 0 10px var(--green);
+            animation: pulseDot 1.4s ease-in-out infinite; flex-shrink: 0;
+        }
+        .player-header .now-playing .name {
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .close-player {
+            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+            color: #c8c8d0; border-radius: 10px; padding: 8px 14px;
+            font-size: 0.82rem; font-weight: 600; cursor: pointer; font-family: inherit;
+            transition: all 0.2s;
+        }
+        .close-player:hover { background: rgba(255,77,109,0.15); border-color: rgba(255,77,109,0.4); color: #fff; }
+
+        .player-layout {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 14px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 18px;
+            padding: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+        .player-frame, .chat-frame {
+            position: relative; background: #000; border-radius: 12px; overflow: hidden;
+            width: 100%; height: 100%;
+        }
+        .player-frame { aspect-ratio: 16 / 9; }
+        .chat-frame { height: 100%; min-height: 400px; }
+        .player-frame iframe, .chat-frame iframe {
+            position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block;
+        }
+
+        @media (max-width: 900px) {
+            .player-layout { grid-template-columns: 1fr; }
+            .chat-frame { height: 500px; min-height: 400px; aspect-ratio: auto; }
+        }
+        @media (max-width: 560px) {
+            .chat-frame { height: 420px; }
+        }
+
         @media (max-width: 768px) {
             body {
                 padding:
@@ -315,19 +348,13 @@
                     calc(14px + var(--safe-left));
             }
             .container { max-width: 100%; }
-            .grid {
-                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-                gap: 14px;
-            }
+            .grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
             .header { margin-bottom: 20px; }
             .controls { margin-bottom: 18px; }
             .orb-1 { width: 260px; height: 260px; }
             .orb-2 { width: 240px; height: 240px; }
         }
 
-        /* ============================================
-           Телефоны (Android + iPhone)
-           ============================================ */
         @media (max-width: 560px) {
             body {
                 padding:
@@ -337,66 +364,34 @@
                     calc(12px + var(--safe-left));
                 align-items: flex-start;
             }
-
             .header { margin-bottom: 16px; }
             .header h1 { letter-spacing: -0.5px; }
             .header p { font-size: 0.8rem; }
-
-            .controls {
-                flex-direction: column;
-                gap: 8px;
-                margin-bottom: 16px;
-            }
-            input {
-                padding: 14px 16px;
-                min-height: 48px;
-                width: 100%;
-                font-size: 16px; /* предотвращает зум iOS */
-            }
-            .add-btn {
-                width: 100%;
-                padding: 14px;
-                min-height: 48px;
-                font-size: 1rem;
-            }
-
-            .grid {
-                grid-template-columns: 1fr;
-                gap: 12px;
-            }
-
-            .card {
-                padding: 18px 16px 16px;
-                border-radius: 18px;
-            }
-            /* На мобилке не «прыгает» при hover, но активный tap подсвечивается */
+            .controls { flex-direction: column; gap: 8px; margin-bottom: 16px; }
+            input { padding: 14px 16px; min-height: 48px; width: 100%; font-size: 16px; }
+            .add-btn { width: 100%; padding: 14px; min-height: 48px; font-size: 1rem; }
+            .grid { grid-template-columns: 1fr; gap: 12px; }
+            .card { padding: 18px 16px 16px; border-radius: 18px; }
             .card:hover { transform: none; }
             .card:active { transform: scale(0.99); }
-
             .avatar-wrap { width: 48px; height: 48px; }
             .avatar { width: 48px; height: 48px; font-size: 1.2rem; }
             .avatar-letter { font-size: 1.2rem; }
-
             .card-title .name { font-size: 1rem; }
-
             .remove-btn { width: 44px; height: 44px; font-size: 1.1rem; }
-
             .status { font-size: 0.74rem; padding: 7px 14px; margin-bottom: 12px; }
-
             .stream-info { padding: 12px; }
             .stream-info .title { font-size: 0.84rem; }
             .meta-row { font-size: 0.76rem; }
             .duration-row { font-size: 0.76rem; }
-
             .note { margin-top: 22px; font-size: 0.68rem; }
-
             .empty-state { padding: 40px 16px; }
             .empty-state .big { font-size: 2.5rem; }
+            .player-layout { padding: 8px; gap: 10px; border-radius: 14px; }
+            .player-header { margin-bottom: 10px; }
+            .player-header .now-playing { font-size: 0.85rem; }
         }
 
-        /* ============================================
-           Очень маленькие экраны (<360px)
-           ============================================ */
         @media (max-width: 360px) {
             .card { padding: 16px 14px 14px; }
             .avatar-wrap { width: 44px; height: 44px; }
@@ -405,38 +400,22 @@
             .stream-info .title { font-size: 0.8rem; }
         }
 
-        /* ============================================
-           Уважение к prefers-reduced-motion
-           ============================================ */
         @media (prefers-reduced-motion: reduce) {
             .bg-gradient, .orb, .particle, .avatar-ring, .status.online .dot,
-            .card, .header, .controls, .stream-info {
-                animation: none !important;
-                transition: none !important;
+            .card, .header, .controls, .stream-info, .player-section {
+                animation: none !important; transition: none !important;
             }
             .card:hover { transform: none; }
         }
 
-        /* ============================================
-           Понижаем нагрузку на мобилке с батареей
-           ============================================ */
         @media (max-width: 560px) and (prefers-reduced-motion: no-preference) {
             .bg-gradient { animation-duration: 40s; opacity: 0.4; }
             .orb-1, .orb-2 { animation-duration: 20s; }
             .particle { animation-duration: 24s !important; }
         }
 
-        /* ============================================
-           Поддержка тёмной темы в любом случае
-           ============================================ */
-        @media (prefers-color-scheme: light) {
-            /* По желанию можно сделать светлую версию, но у нас всегда тёмный дизайн */
-        }
-
-        /* Touch-friendly фокусы */
         button:focus-visible, input:focus-visible {
-            outline: 2px solid var(--purple-light);
-            outline-offset: 2px;
+            outline: 2px solid var(--purple-light); outline-offset: 2px;
         }
     </style>
 </head>
@@ -465,8 +444,23 @@
             <p>Пока нет каналов. Добавьте первый!</p>
         </div>
 
+        <!-- Player + Chat -->
+        <div class="player-section hidden" id="playerSection">
+            <div class="player-header">
+                <div class="now-playing">
+                    <span class="live-dot"></span>
+                    <span class="name" id="playerChannelName">—</span>
+                </div>
+                <button class="close-player" onclick="closePlayer()">✕ Закрыть</button>
+            </div>
+            <div class="player-layout">
+                <div class="player-frame" id="playerFrame"></div>
+                <div class="chat-frame" id="chatFrame"></div>
+            </div>
+        </div>
+
         <p class="note">
-            Автообновление каждые 60 секунд · Список сохраняется в браузере · Данные из публичного API Twitch
+            Нажмите на карточку канала, чтобы открыть плеер и чат · Автообновление каждые 60 секунд · Список сохраняется в браузере
         </p>
     </div>
 
@@ -477,10 +471,14 @@
         const DEFAULT_CHANNELS = ['frik0vna'];
         const IS_MOBILE = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth < 600;
 
+        // ВАЖНО: твой домен на GitHub Pages
+        const PARENT_DOMAIN = 'kingjo226.github.io';
+
         const state = {};
         let channels = [];
         let globalIntervalId = null;
         let particlesCreated = false;
+        let activePlayerChannel = null;
 
         function loadChannels() {
             try {
@@ -493,16 +491,14 @@
             return [...DEFAULT_CHANNELS];
         }
         function saveChannels() {
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(channels));
-            } catch (e) { console.warn('Не удалось сохранить список:', e); }
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(channels)); }
+            catch (e) { console.warn('Не удалось сохранить список:', e); }
         }
 
         function createParticles() {
             if (particlesCreated) return;
             particlesCreated = true;
             const container = document.getElementById('particles');
-            // На мобилке меньше частиц для экономии батареи
             const count = IS_MOBILE ? 14 : 28;
             for (let i = 0; i < count; i++) {
                 const p = document.createElement('div');
@@ -536,7 +532,6 @@
                 `,
                 variables: { login: channelName.toLowerCase() }
             };
-
             try {
                 const response = await fetch(TWITCH_GQL_URL, {
                     method: 'POST',
@@ -546,7 +541,6 @@
                 if (!response.ok) throw new Error('Network error');
                 const data = await response.json();
                 if (!data.data || !data.data.user) throw new Error('Канал не найден');
-
                 const user = data.data.user;
                 const stream = user.stream;
                 return {
@@ -585,12 +579,9 @@
         function buildAvatarContent(channel, displayName, avatarUrl) {
             const letter = (displayName || channel || '?').charAt(0).toUpperCase();
             const placeholder = `<span class="avatar-letter">${escapeHtml(letter)}</span>`;
-            if (!avatarUrl || brokenAvatars.has(avatarUrl)) {
-                return placeholder;
-            }
-            return `<img src="${escapeHtml(avatarUrl)}" alt="${escapeHtml(displayName || channel)}" 
-                         referrerpolicy="no-referrer"
-                         loading="lazy"
+            if (!avatarUrl || brokenAvatars.has(avatarUrl)) return placeholder;
+            return `<img src="${escapeHtml(avatarUrl)}" alt="${escapeHtml(displayName || channel)}"
+                         referrerpolicy="no-referrer" loading="lazy"
                          onerror="handleAvatarError(this)">`;
         }
 
@@ -599,35 +590,32 @@
             if (src) brokenAvatars.add(src);
             const parent = img.parentElement;
             const letter = (img.getAttribute('alt') || '?').charAt(0).toUpperCase();
-            if (parent) {
-                parent.innerHTML = `<span class="avatar-letter">${escapeHtml(letter)}</span>`;
-            }
+            if (parent) parent.innerHTML = `<span class="avatar-letter">${escapeHtml(letter)}</span>`;
         };
 
         function render() {
             const grid = document.getElementById('grid');
             const empty = document.getElementById('emptyState');
-
             if (channels.length === 0) {
                 grid.innerHTML = '';
                 empty.classList.remove('hidden');
                 return;
             }
             empty.classList.add('hidden');
-
             Array.from(grid.children).forEach(card => {
                 if (!channels.includes(card.dataset.channel)) card.remove();
             });
-
             channels.forEach((channel, index) => {
                 let card = grid.querySelector(`[data-channel="${channel}"]`);
                 if (!card) {
                     card = createCard(channel);
                     grid.appendChild(card);
                 }
-                if (grid.children[index] !== card) {
-                    grid.insertBefore(card, grid.children[index]);
-                }
+                if (grid.children[index] !== card) grid.insertBefore(card, grid.children[index]);
+            });
+            // подсветить активный
+            Array.from(grid.children).forEach(c => {
+                c.classList.toggle('active', c.dataset.channel === activePlayerChannel);
             });
         }
 
@@ -665,15 +653,17 @@
                     </div>
                 </div>
             `;
-
-            card.querySelector('[data-role="remove"]').addEventListener('click', () => removeChannel(channel));
+            card.querySelector('[data-role="remove"]').addEventListener('click', (e) => {
+                e.stopPropagation();
+                removeChannel(channel);
+            });
+            card.addEventListener('click', () => openPlayer(channel));
             return card;
         }
 
         function updateCard(channel, data) {
             const card = document.querySelector(`[data-channel="${channel}"]`);
             if (!card) return;
-
             const avatarEl = card.querySelector('[data-role="avatar"]');
             const nameEl = card.querySelector('[data-role="name"]');
             const handleEl = card.querySelector('[data-role="handle"]');
@@ -693,21 +683,16 @@
                 stopTimer(channel);
                 return;
             }
-
             nameEl.textContent = data.displayName;
             handleEl.textContent = `twitch.tv/${channel.toLowerCase()}`;
-
             const currentImg = avatarEl.querySelector('img');
             const currentSrc = currentImg ? currentImg.getAttribute('src') : null;
-            const newAvatar = data.avatar;
-
-            if (newAvatar && newAvatar !== currentSrc) {
-                avatarEl.innerHTML = buildAvatarContent(channel, data.displayName, newAvatar);
-            } else if (!newAvatar && currentImg) {
+            if (data.avatar && data.avatar !== currentSrc) {
+                avatarEl.innerHTML = buildAvatarContent(channel, data.displayName, data.avatar);
+            } else if (!data.avatar && currentImg) {
                 const letter = (data.displayName || channel).charAt(0).toUpperCase();
                 avatarEl.innerHTML = `<span class="avatar-letter">${escapeHtml(letter)}</span>`;
             }
-
             if (data.isLive) {
                 statusEl.className = 'status online';
                 statusTextEl.textContent = 'В ЭФИРЕ';
@@ -752,7 +737,6 @@
             const data = await fetchStreamStatus(channel);
             updateCard(channel, data);
         }
-
         async function checkAll() {
             await Promise.all(channels.map(ch => checkChannel(ch)));
         }
@@ -761,17 +745,14 @@
             const input = document.getElementById('channelInput');
             const raw = input.value.trim().toLowerCase();
             if (!raw) return;
-
             const name = raw.replace(/^https?:\/\/(www\.)?twitch\.tv\//, '').replace(/\/.*$/, '').trim();
             if (!name) return;
-
             if (channels.includes(name)) {
                 input.value = '';
                 input.placeholder = 'Этот канал уже в списке!';
                 setTimeout(() => input.placeholder = 'Введите ник канала...', 2000);
                 return;
             }
-
             channels.push(name);
             saveChannels();
             render();
@@ -782,29 +763,61 @@
 
         function removeChannel(channel) {
             const card = document.querySelector(`[data-channel="${channel}"]`);
-            if (card) {
-                card.classList.add('removing');
-                setTimeout(() => {
-                    channels = channels.filter(c => c !== channel);
-                    saveChannels();
-                    stopTimer(channel);
-                    delete state[channel];
-                    render();
-                }, 380);
-            } else {
+            const finish = () => {
                 channels = channels.filter(c => c !== channel);
                 saveChannels();
                 stopTimer(channel);
                 delete state[channel];
+                if (activePlayerChannel === channel) closePlayer();
                 render();
+            };
+            if (card) {
+                card.classList.add('removing');
+                setTimeout(finish, 380);
+            } else {
+                finish();
             }
+        }
+
+        // ===== Плеер и чат =====
+        function openPlayer(channel) {
+            if (activePlayerChannel === channel) return;
+            activePlayerChannel = channel;
+            const section = document.getElementById('playerSection');
+            section.classList.remove('hidden');
+            document.getElementById('playerChannelName').textContent = channel;
+
+            // Плеер через официальный iframe embed
+            const playerFrame = document.getElementById('playerFrame');
+            playerFrame.innerHTML = `<iframe
+                src="https://player.twitch.tv/?channel=${encodeURIComponent(channel)}&parent=${PARENT_DOMAIN}&autoplay=true&muted=true"
+                allowfullscreen
+                allow="autoplay; fullscreen"
+                title="Twitch Player ${escapeHtml(channel)}"></iframe>`;
+
+            // Чат через официальный iframe embed
+            const chatFrame = document.getElementById('chatFrame');
+            chatFrame.innerHTML = `<iframe
+                src="https://www.twitch.tv/embed/${encodeURIComponent(channel)}/chat?parent=${PARENT_DOMAIN}&darkpopout"
+                allowfullscreen
+                title="Twitch Chat ${escapeHtml(channel)}"></iframe>`;
+
+            render(); // подсветить активную карточку
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function closePlayer() {
+            activePlayerChannel = null;
+            const section = document.getElementById('playerSection');
+            section.classList.add('hidden');
+            document.getElementById('playerFrame').innerHTML = '';
+            document.getElementById('chatFrame').innerHTML = '';
+            render();
         }
 
         document.getElementById('channelInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') addChannel();
         });
-
-        // Обновление при возвращении на вкладку (полезно на мобилке)
         document.addEventListener('visibilitychange', () => {
             if (!document.hidden) checkAll();
         });
@@ -820,4 +833,4 @@
         });
     </script>
 </body>
-</html>
+    </html>
