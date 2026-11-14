@@ -190,36 +190,53 @@
         .stream-player-close { width: 30px; height: 30px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #c8c8d0; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
         .stream-player-close:hover { background: rgba(255,77,109,0.2); color: #fff; }
 
+        /* Контейнер для видео и чата */
         .stream-player-body { display: flex; flex-direction: column; flex: 1; }
         .stream-player-video { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; }
         .stream-player-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+        
         .stream-player-chat { position: relative; height: 380px; background: #18181b; border-top: 1px solid rgba(255,255,255,0.06); }
         .stream-player-chat iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 
-        /* Вкладки для мобилок */
-        .player-tabs { display: none; padding: 8px 10px; background: rgba(0,0,0,0.3); gap: 6px; }
-        .player-tabs button { flex: 1; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #a0a0ad; border-radius: 10px; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
-        .player-tabs button.active { background: var(--purple); color: #fff; border-color: var(--purple); }
-
-        /* ПК / Широкие экраны: видео и чат рядом */
+        /* ==========================================
+           ПК и широкие экраны (от 1000px)
+           Видео слева, чат справа
+           ========================================== */
         @media (min-width: 1000px) {
-            .stream-player-body { flex-direction: row; }
-            .stream-player-video { width: 70%; aspect-ratio: auto; min-height: 420px; }
-            .stream-player-chat { width: 30%; height: auto; min-height: 420px; border-top: none; border-left: 1px solid rgba(255,255,255,0.06); }
+            .stream-player-body { 
+                flex-direction: row; 
+            }
+            .stream-player-video { 
+                width: 70%; 
+                aspect-ratio: auto; 
+                height: auto; 
+                min-height: 450px; 
+            }
+            .stream-player-chat { 
+                width: 30%; 
+                height: auto; 
+                min-height: 450px; 
+                border-top: none; 
+                border-left: 1px solid rgba(255,255,255,0.06); 
+            }
         }
 
-        /* Планшеты и телефоны: вкладки */
+        /* ==========================================
+           Мобилки и планшеты (до 999px)
+           Как в приложении: видео сверху, чат снизу
+           ========================================== */
         @media (max-width: 999px) {
-            .player-tabs { display: flex; }
-            .stream-player-body { flex-direction: column; }
-            .stream-player-video, .stream-player-chat { width: 100%; min-height: 0; border: none; }
-            /* По умолчанию видео активно, чат скрыт */
-            .stream-player-chat { display: none; }
-            .stream-player.chat-active .stream-player-video { display: none; }
-            .stream-player.chat-active .stream-player-chat { display: block; aspect-ratio: auto; height: 450px; }
+            .streams-grid { 
+                grid-template-columns: 1fr; 
+            }
+            .stream-player-video { 
+                aspect-ratio: 16 / 9; 
+            }
+            .stream-player-chat { 
+                height: 450px; /* Высота чата в мобильном приложении */
+                border-top: 1px solid rgba(255,255,255,0.06); 
+            }
         }
-
-        @media (max-width: 900px) { .streams-grid { grid-template-columns: 1fr; } }
 
         @media (max-width: 560px) {
             body { padding: calc(14px + var(--safe-top)) calc(10px + var(--safe-right)) calc(16px + var(--safe-bottom)) calc(10px + var(--safe-left)); }
@@ -228,10 +245,8 @@
             .grid { grid-template-columns: 1fr; gap: 12px; }
             .card { padding: 18px 14px 14px; }
             .stream-player-video { aspect-ratio: 16 / 9; }
-            .stream-player.chat-active .stream-player-chat { height: 400px; }
+            .stream-player-chat { height: 420px; }
             .stream-player-head { padding: 8px 10px; }
-            .player-tabs { padding: 6px 8px; }
-            .player-tabs button { padding: 9px; font-size: 0.78rem; }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -283,7 +298,6 @@
         const DEFAULT_CHANNELS = ['frik0vna'];
         const PARENT_DOMAIN = 'kingjo226.github.io';
 
-        // Определяем мобильное устройство
         const IS_MOBILE = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth < 600;
 
         const state = {};
@@ -485,14 +499,6 @@
             renderStreams();
         }
 
-        function switchTab(channel, tab) {
-            const player = document.querySelector(`.stream-player[data-channel="${channel}"]`);
-            if (!player) return;
-            player.classList.toggle('chat-active', tab === 'chat');
-            player.querySelectorAll('.player-tabs button').forEach(btn => btn.classList.remove('active'));
-            player.querySelector(`.player-tabs button[data-tab="${tab}"]`).classList.add('active');
-        }
-
         function renderStreams() {
             const section = document.getElementById('streamsSection');
             const grid = document.getElementById('streamsGrid');
@@ -518,10 +524,6 @@
                             <span class="name">${escapeHtml(channel)}</span>
                         </div>
                         <button class="stream-player-close" onclick="closeStream('${escapeHtml(channel)}')">✕</button>
-                    </div>
-                    <div class="player-tabs">
-                        <button class="active" data-tab="video" onclick="switchTab('${escapeHtml(channel)}', 'video')">📺 Видео</button>
-                        <button data-tab="chat" onclick="switchTab('${escapeHtml(channel)}', 'chat')">💬 Чат</button>
                     </div>
                     <div class="stream-player-body">
                         <div class="stream-player-video">
@@ -551,4 +553,4 @@
         });
     </script>
 </body>
-</html>
+    </html>
