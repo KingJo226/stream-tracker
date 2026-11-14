@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#08080c">
+    <meta name="referrer" content="no-referrer">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Stream Pulse • Multi Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+        :root {
+            --purple: #9147ff;
+            --purple-light: #bf94ff;
+            --green: #00ff88;
+            --red: #ff4d6d;
+            --bg: #08080c;
+            --glass: rgba(20, 20, 28, 0.55);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --safe-left: env(safe-area-inset-left, 0px);
+            --safe-right: env(safe-area-inset-right, 0px);
+        }
+
+        html { -webkit-text-size-adjust: 100%; }
+
+        html, body { min-height: 100%; }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: #efeff1;
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            justify-content: center;
+            padding:
+                calc(32px + var(--safe-top))
+                calc(20px + var(--safe-right))
+                calc(32px + var(--safe-bottom))
+                calc(20px + var(--safe-left));
+            position: relative;
+            overflow-x: hidden;
+            overscroll-behavior-y: contain;
+        }
+
+        .bg-gradient {
+            position: fixed; inset: -50%;
+            background: conic-gradient(from 0deg,
+                #1a0033, #0d0d1a, #2d0a4e, #12001f,
+                #1a0033, #0d0d1a, #2d0a4e, #12001f);
+            animation: rotateBg 24s linear infinite;
+            filter: blur(120px); opacity: 0.55; z-index: 0;
+            will-change: transform;
+        }
+        @keyframes rotateBg { to { transform: rotate(360deg); } }
+
+        .particles { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+        .particle {
+            position: absolute; border-radius: 50%; background: var(--purple-light);
+            opacity: 0; filter: blur(1px); animation: floatUp linear infinite;
+        }
+        @keyframes floatUp {
+            0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+            10%  { opacity: 0.7; } 90%  { opacity: 0.5; }
+            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+        }
+
+        .orb { position: fixed; border-radius: 50%; filter: blur(80px); z-index: 0; animation: orbFloat 12s ease-in-out infinite; }
+        .orb-1 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(145,71,255,0.5), transparent 70%); top: -100px; left: -100px; }
+        .orb-2 { width: 350px; height: 350px; background: radial-gradient(circle, rgba(0,255,136,0.25), transparent 70%); bottom: -80px; right: -80px; animation-delay: -6s; }
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0,0) scale(1); }
+            50% { transform: translate(40px, -30px) scale(1.15); }
+        }
+
+        .container {
+            position: relative; z-index: 2; width: 100%; max-width: 1200px;
+        }
+
+        .header {
+            text-align: center; margin-bottom: 28px;
+            animation: cardIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        .header h1 {
+            font-size: clamp(1.6rem, 5vw, 2.2rem);
+            font-weight: 800; letter-spacing: -1px;
+            background: linear-gradient(135deg, #fff, var(--purple-light));
+            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+        .header p { color: #8a8a95; font-size: clamp(0.82rem, 2.5vw, 0.92rem); }
+
+        .controls {
+            display: flex; gap: 10px; margin-bottom: 24px;
+            animation: cardIn 0.8s 0.1s cubic-bezier(0.16, 1, 0.3, 1) both;
+            max-width: 720px; margin-left: auto; margin-right: auto;
+        }
+        input {
+            flex: 1; min-width: 0;
+            padding: 15px 18px; border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: var(--glass); backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            color: #efeff1; font-size: 16px; font-family: inherit; outline: none;
+            transition: border-color 0.25s, box-shadow 0.25s;
+            appearance: none; -webkit-appearance: none;
+        }
+        input::placeholder { color: #6b6b78; }
+        input:focus { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(145,71,255,0.15); }
+        .add-btn {
+            padding: 15px 26px; background: linear-gradient(135deg, var(--purple), #6e2bd9);
+            color: #fff; border: none; border-radius: 14px; font-weight: 700;
+            font-family: inherit; font-size: 0.95rem; cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.25s, filter 0.25s; white-space: nowrap;
+            box-shadow: 0 4px 20px rgba(145,71,255,0.3);
+            min-height: 48px;
+            touch-action: manipulation;
+        }
+        .add-btn:hover { filter: brightness(1.12); box-shadow: 0 6px 28px rgba(145,71,255,0.45); }
+        .add-btn:active { transform: scale(0.96); }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 18px;
+            padding-bottom: 8px;
+        }
+
+        .card {
+            position: relative;
+            background: var(--glass);
+            backdrop-filter: blur(24px) saturate(140%);
+            -webkit-backdrop-filter: blur(24px) saturate(140%);
+            border: 1px solid var(--glass-border);
+            border-radius: 22px;
+            padding: 22px 20px 18px;
+            box-shadow: 0 16px 50px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06);
+            animation: cardIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+            transition: box-shadow 0.5s ease, border-color 0.5s ease, transform 0.3s;
+            min-width: 0;
+        }
+        .card:hover { transform: translateY(-3px); }
+        .card.live {
+            border-color: rgba(0,255,136,0.25);
+            box-shadow: 0 16px 50px rgba(0,0,0,0.45), 0 0 40px rgba(0,255,136,0.1), inset 0 1px 0 rgba(255,255,255,0.06);
+        }
+        .card.removing {
+            animation: cardOut 0.4s cubic-bezier(0.5, 0, 0.75, 0) both;
+        }
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(24px) scale(0.96); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes cardOut {
+            to { opacity: 0; transform: scale(0.85) translateY(-10px); }
+        }
+        .card::before {
+            content: ''; position: absolute; top: 0; left: 20%; right: 20%;
+            height: 2px; background: linear-gradient(90deg, transparent, var(--purple-light), transparent);
+            border-radius: 2px; opacity: 0.8;
+        }
+        .card.live::before {
+            background: linear-gradient(90deg, transparent, var(--green), transparent);
+        }
+
+        .card-head {
+            display: flex; align-items: center; gap: 14px; margin-bottom: 16px;
+        }
+        .avatar-wrap { position: relative; width: 56px; height: 56px; flex-shrink: 0; }
+        .avatar-ring {
+            position: absolute; inset: -4px; border-radius: 50%;
+            background: conic-gradient(from 0deg, var(--purple), var(--purple-light), var(--purple));
+            animation: spin 6s linear infinite; opacity: 0.55; filter: blur(5px);
+        }
+        .card.live .avatar-ring {
+            background: conic-gradient(from 0deg, var(--green), #7dffc0, var(--green)); opacity: 0.9;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .avatar {
+            position: relative; width: 56px; height: 56px; border-radius: 50%;
+            background: linear-gradient(135deg, #2a1a4e, #1a1a22);
+            border: 2px solid rgba(255,255,255,0.1);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem; font-weight: 800; color: var(--purple-light);
+            overflow: hidden; z-index: 1;
+            text-transform: uppercase;
+        }
+        .avatar img {
+            width: 100%; height: 100%; object-fit: cover; display: block;
+        }
+        .avatar-letter {
+            display: flex; align-items: center; justify-content: center;
+            width: 100%; height: 100%;
+            font-size: 1.4rem; font-weight: 800; color: var(--purple-light);
+            background: linear-gradient(135deg, #2a1a4e, #1a1a22);
+        }
+
+        .card-title { flex: 1; min-width: 0; }
+        .card-title .name {
+            font-size: 1.05rem; font-weight: 800; letter-spacing: -0.3px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            color: #fff;
+        }
+        .card-title .handle {
+            font-size: 0.75rem; color: #8a8a95; font-weight: 500;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+
+        .remove-btn {
+            width: 40px; height: 40px; flex-shrink: 0;
+            background: rgba(255,77,109,0.08);
+            border: 1px solid rgba(255,77,109,0.2);
+            border-radius: 10px; color: #ff6b8a; cursor: pointer;
+            font-size: 1rem; font-weight: 700; line-height: 1;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+            font-family: inherit;
+            touch-action: manipulation;
+        }
+        .remove-btn:hover, .remove-btn:focus-visible {
+            background: rgba(255,77,109,0.2);
+            border-color: rgba(255,77,109,0.5);
+            color: #fff;
+            transform: scale(1.1);
+            outline: none;
+        }
+        .remove-btn:active { transform: scale(0.95); }
+
+        .status {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 8px 16px; border-radius: 50px; font-weight: 700; font-size: 0.78rem;
+            letter-spacing: 0.5px; margin-bottom: 14px;
+            transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+        }
+        .status.online {
+            background: rgba(0,255,136,0.12); color: var(--green);
+            border: 1px solid rgba(0,255,136,0.35);
+            box-shadow: 0 0 20px rgba(0,255,136,0.12), inset 0 0 12px rgba(0,255,136,0.05);
+        }
+        .status.offline { background: rgba(255,77,109,0.1); color: var(--red); border: 1px solid rgba(255,77,109,0.3); }
+        .status.checking { background: rgba(145,71,255,0.1); color: var(--purple-light); border: 1px solid rgba(145,71,255,0.3); }
+        .status .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+        .status.online .dot { animation: pulseDot 1.4s ease-in-out infinite; }
+        @keyframes pulseDot {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(0,255,136,0.6); }
+            50% { box-shadow: 0 0 0 6px rgba(0,255,136,0); }
+        }
+
+        .stream-info {
+            background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 14px; padding: 14px; text-align: left;
+            animation: fadeIn 0.5s ease both;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .stream-info .label {
+            font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1.2px;
+            color: #6b6b78; font-weight: 600; margin-bottom: 5px; display: block;
+        }
+        .stream-info .title {
+            font-size: 0.86rem; font-weight: 600; line-height: 1.4; margin-bottom: 10px; color: #fff;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+            overflow-wrap: break-word; word-break: break-word;
+        }
+        .meta-row {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.78rem; color: #a0a0ad; margin-bottom: 8px; gap: 8px;
+        }
+        .meta-row > span:first-child {
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
+        }
+        .meta-row .viewers { color: var(--green); font-weight: 700; white-space: nowrap; }
+        .duration-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.06);
+            font-size: 0.78rem;
+        }
+        .duration-row .label-inline { color: #a0a0ad; }
+        .duration-row .duration {
+            color: var(--purple-light); font-weight: 700; font-variant-numeric: tabular-nums;
+        }
+
+        .empty-state {
+            text-align: center; padding: 60px 20px; color: #6b6b78;
+            animation: cardIn 0.6s ease both;
+        }
+        .empty-state .big { font-size: 3rem; margin-bottom: 12px; opacity: 0.5; }
+        .empty-state p { font-size: 0.95rem; }
+
+        .note {
+            text-align: center; font-size: 0.72rem; color: #55555f;
+            margin-top: 28px; line-height: 1.6; padding-bottom: var(--safe-bottom);
+        }
+
+        .hidden { display: none !important; }
+
+        /* ============================================
+           Планшеты: уже, но не телефон
+           ============================================ */
+        @media (max-width: 768px) {
+            body {
+                padding:
+                    calc(20px + var(--safe-top))
+                    calc(14px + var(--safe-right))
+                    calc(20px + var(--safe-bottom))
+                    calc(14px + var(--safe-left));
+            }
+            .container { max-width: 100%; }
+            .grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 14px;
+            }
+            .header { margin-bottom: 20px; }
+            .controls { margin-bottom: 18px; }
+            .orb-1 { width: 260px; height: 260px; }
+            .orb-2 { width: 240px; height: 240px; }
+        }
+
+        /* ============================================
+           Телефоны (Android + iPhone)
+           ============================================ */
+        @media (max-width: 560px) {
+            body {
+                padding:
+                    calc(14px + var(--safe-top))
+                    calc(12px + var(--safe-right))
+                    calc(16px + var(--safe-bottom))
+                    calc(12px + var(--safe-left));
+                align-items: flex-start;
+            }
+
+            .header { margin-bottom: 16px; }
+            .header h1 { letter-spacing: -0.5px; }
+            .header p { font-size: 0.8rem; }
+
+            .controls {
+                flex-direction: column;
+                gap: 8px;
+                margin-bottom: 16px;
+            }
+            input {
+                padding: 14px 16px;
+                min-height: 48px;
+                width: 100%;
+                font-size: 16px; /* предотвращает зум iOS */
+            }
+            .add-btn {
+                width: 100%;
+                padding: 14px;
+                min-height: 48px;
+                font-size: 1rem;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .card {
+                padding: 18px 16px 16px;
+                border-radius: 18px;
+            }
+            /* На мобилке не «прыгает» при hover, но активный tap подсвечивается */
+            .card:hover { transform: none; }
+            .card:active { transform: scale(0.99); }
+
+            .avatar-wrap { width: 48px; height: 48px; }
+            .avatar { width: 48px; height: 48px; font-size: 1.2rem; }
+            .avatar-letter { font-size: 1.2rem; }
+
+            .card-title .name { font-size: 1rem; }
+
+            .remove-btn { width: 44px; height: 44px; font-size: 1.1rem; }
+
+            .status { font-size: 0.74rem; padding: 7px 14px; margin-bottom: 12px; }
+
+            .stream-info { padding: 12px; }
+            .stream-info .title { font-size: 0.84rem; }
+            .meta-row { font-size: 0.76rem; }
+            .duration-row { font-size: 0.76rem; }
+
+            .note { margin-top: 22px; font-size: 0.68rem; }
+
+            .empty-state { padding: 40px 16px; }
+            .empty-state .big { font-size: 2.5rem; }
+        }
+
+        /* ============================================
+           Очень маленькие экраны (<360px)
+           ============================================ */
+        @media (max-width: 360px) {
+            .card { padding: 16px 14px 14px; }
+            .avatar-wrap { width: 44px; height: 44px; }
+            .avatar { width: 44px; height: 44px; font-size: 1.1rem; }
+            .card-title .name { font-size: 0.95rem; }
+            .stream-info .title { font-size: 0.8rem; }
+        }
+
+        /* ============================================
+           Уважение к prefers-reduced-motion
+           ============================================ */
+        @media (prefers-reduced-motion: reduce) {
+            .bg-gradient, .orb, .particle, .avatar-ring, .status.online .dot,
+            .card, .header, .controls, .stream-info {
+                animation: none !important;
+                transition: none !important;
+            }
+            .card:hover { transform: none; }
+        }
+
+        /* ============================================
+           Понижаем нагрузку на мобилке с батареей
+           ============================================ */
+        @media (max-width: 560px) and (prefers-reduced-motion: no-preference) {
+            .bg-gradient { animation-duration: 40s; opacity: 0.4; }
+            .orb-1, .orb-2 { animation-duration: 20s; }
+            .particle { animation-duration: 24s !important; }
+        }
+
+        /* ============================================
+           Поддержка тёмной темы в любом случае
+           ============================================ */
+        @media (prefers-color-scheme: light) {
+            /* По желанию можно сделать светлую версию, но у нас всегда тёмный дизайн */
+        }
+
+        /* Touch-friendly фокусы */
+        button:focus-visible, input:focus-visible {
+            outline: 2px solid var(--purple-light);
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-gradient"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+        <div class="header">
+            <h1>Stream Pulse</h1>
+            <p>Отслеживание стримов в реальном времени</p>
+        </div>
+
+        <div class="controls">
+            <input type="text" id="channelInput" placeholder="Введите ник канала..." autocomplete="off" spellcheck="false" autocapitalize="off" autocorrect="off">
+            <button class="add-btn" onclick="addChannel()">+ Добавить</button>
+        </div>
+
+        <div class="grid" id="grid"></div>
+
+        <div class="empty-state hidden" id="emptyState">
+            <div class="big">📡</div>
+            <p>Пока нет каналов. Добавьте первый!</p>
+        </div>
+
+        <p class="note">
+            Автообновление каждые 60 секунд · Список сохраняется в браузере · Данные из публичного API Twitch
+        </p>
+    </div>
+
+    <script>
+        const TWITCH_GQL_URL = 'https://gql.twitch.tv/gql';
+        const CLIENT_ID = 'kimne78kx3ncx6brgo4mv6wki5h1ko';
+        const STORAGE_KEY = 'stream_pulse_channels_v1';
+        const DEFAULT_CHANNELS = ['frik0vna'];
+        const IS_MOBILE = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth < 600;
+
+        const state = {};
+        let channels = [];
+        let globalIntervalId = null;
+        let particlesCreated = false;
+
+        function loadChannels() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+                }
+            } catch (e) { console.warn('Не удалось загрузить список:', e); }
+            return [...DEFAULT_CHANNELS];
+        }
+        function saveChannels() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(channels));
+            } catch (e) { console.warn('Не удалось сохранить список:', e); }
+        }
+
+        function createParticles() {
+            if (particlesCreated) return;
+            particlesCreated = true;
+            const container = document.getElementById('particles');
+            // На мобилке меньше частиц для экономии батареи
+            const count = IS_MOBILE ? 14 : 28;
+            for (let i = 0; i < count; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                const size = Math.random() * 4 + 1.5;
+                p.style.width = size + 'px';
+                p.style.height = size + 'px';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.animationDuration = (Math.random() * 14 + 10) + 's';
+                p.style.animationDelay = (Math.random() * 14) + 's';
+                p.style.background = Math.random() > 0.5 ? 'var(--purple-light)' : 'var(--green)';
+                container.appendChild(p);
+            }
+        }
+
+        async function fetchStreamStatus(channelName) {
+            const query = {
+                query: `
+                    query($login: String!) {
+                        user(login: $login) {
+                            displayName
+                            profileImageURL(width: 100)
+                            stream {
+                                title
+                                viewersCount
+                                createdAt
+                                game { name }
+                            }
+                        }
+                    }
+                `,
+                variables: { login: channelName.toLowerCase() }
+            };
+
+            try {
+                const response = await fetch(TWITCH_GQL_URL, {
+                    method: 'POST',
+                    headers: { 'Client-ID': CLIENT_ID, 'Content-Type': 'application/json' },
+                    body: JSON.stringify(query)
+                });
+                if (!response.ok) throw new Error('Network error');
+                const data = await response.json();
+                if (!data.data || !data.data.user) throw new Error('Канал не найден');
+
+                const user = data.data.user;
+                const stream = user.stream;
+                return {
+                    exists: true,
+                    displayName: user.displayName,
+                    avatar: user.profileImageURL || null,
+                    isLive: !!stream,
+                    title: stream ? stream.title : null,
+                    viewers: stream ? stream.viewersCount : 0,
+                    game: stream && stream.game ? stream.game.name : null,
+                    startedAt: stream ? stream.createdAt : null
+                };
+            } catch (error) {
+                console.error('Ошибка для', channelName, ':', error);
+                return { exists: false, error: error.message };
+            }
+        }
+
+        function formatDuration(ms) {
+            if (ms < 0 || !isFinite(ms)) return '00:00:00';
+            const totalSec = Math.floor(ms / 1000);
+            const h = Math.floor(totalSec / 3600);
+            const m = Math.floor((totalSec % 3600) / 60);
+            const s = totalSec % 60;
+            return [h, m, s].map(v => String(v).padStart(2, '0')).join(':');
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        const brokenAvatars = new Set();
+
+        function buildAvatarContent(channel, displayName, avatarUrl) {
+            const letter = (displayName || channel || '?').charAt(0).toUpperCase();
+            const placeholder = `<span class="avatar-letter">${escapeHtml(letter)}</span>`;
+            if (!avatarUrl || brokenAvatars.has(avatarUrl)) {
+                return placeholder;
+            }
+            return `<img src="${escapeHtml(avatarUrl)}" alt="${escapeHtml(displayName || channel)}" 
+                         referrerpolicy="no-referrer"
+                         loading="lazy"
+                         onerror="handleAvatarError(this)">`;
+        }
+
+        window.handleAvatarError = function(img) {
+            const src = img.getAttribute('src');
+            if (src) brokenAvatars.add(src);
+            const parent = img.parentElement;
+            const letter = (img.getAttribute('alt') || '?').charAt(0).toUpperCase();
+            if (parent) {
+                parent.innerHTML = `<span class="avatar-letter">${escapeHtml(letter)}</span>`;
+            }
+        };
+
+        function render() {
+            const grid = document.getElementById('grid');
+            const empty = document.getElementById('emptyState');
+
+            if (channels.length === 0) {
+                grid.innerHTML = '';
+                empty.classList.remove('hidden');
+                return;
+            }
+            empty.classList.add('hidden');
+
+            Array.from(grid.children).forEach(card => {
+                if (!channels.includes(card.dataset.channel)) card.remove();
+            });
+
+            channels.forEach((channel, index) => {
+                let card = grid.querySelector(`[data-channel="${channel}"]`);
+                if (!card) {
+                    card = createCard(channel);
+                    grid.appendChild(card);
+                }
+                if (grid.children[index] !== card) {
+                    grid.insertBefore(card, grid.children[index]);
+                }
+            });
+        }
+
+        function createCard(channel) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.dataset.channel = channel;
+            const letter = channel.charAt(0).toUpperCase();
+            card.innerHTML = `
+                <div class="card-head">
+                    <div class="avatar-wrap">
+                        <div class="avatar-ring"></div>
+                        <div class="avatar" data-role="avatar"><span class="avatar-letter">${escapeHtml(letter)}</span></div>
+                    </div>
+                    <div class="card-title">
+                        <div class="name" data-role="name">${escapeHtml(channel)}</div>
+                        <div class="handle" data-role="handle">twitch.tv/${escapeHtml(channel.toLowerCase())}</div>
+                    </div>
+                    <button class="remove-btn" title="Удалить канал" aria-label="Удалить канал ${escapeHtml(channel)}" data-role="remove">✕</button>
+                </div>
+                <div class="status checking" data-role="status">
+                    <span class="dot"></span>
+                    <span data-role="status-text">Проверка...</span>
+                </div>
+                <div class="stream-info hidden" data-role="info">
+                    <span class="label">Сейчас в эфире</span>
+                    <div class="title" data-role="title">—</div>
+                    <div class="meta-row">
+                        <span data-role="game">—</span>
+                        <span class="viewers" data-role="viewers">0 зрителей</span>
+                    </div>
+                    <div class="duration-row">
+                        <span class="label-inline">Длительность</span>
+                        <span class="duration" data-role="duration">00:00:00</span>
+                    </div>
+                </div>
+            `;
+
+            card.querySelector('[data-role="remove"]').addEventListener('click', () => removeChannel(channel));
+            return card;
+        }
+
+        function updateCard(channel, data) {
+            const card = document.querySelector(`[data-channel="${channel}"]`);
+            if (!card) return;
+
+            const avatarEl = card.querySelector('[data-role="avatar"]');
+            const nameEl = card.querySelector('[data-role="name"]');
+            const handleEl = card.querySelector('[data-role="handle"]');
+            const statusEl = card.querySelector('[data-role="status"]');
+            const statusTextEl = card.querySelector('[data-role="status-text"]');
+            const infoEl = card.querySelector('[data-role="info"]');
+            const titleEl = card.querySelector('[data-role="title"]');
+            const gameEl = card.querySelector('[data-role="game"]');
+            const viewersEl = card.querySelector('[data-role="viewers"]');
+            const durationEl = card.querySelector('[data-role="duration"]');
+
+            if (!data.exists) {
+                statusEl.className = 'status offline';
+                statusTextEl.textContent = 'Не найден';
+                infoEl.classList.add('hidden');
+                card.classList.remove('live');
+                stopTimer(channel);
+                return;
+            }
+
+            nameEl.textContent = data.displayName;
+            handleEl.textContent = `twitch.tv/${channel.toLowerCase()}`;
+
+            const currentImg = avatarEl.querySelector('img');
+            const currentSrc = currentImg ? currentImg.getAttribute('src') : null;
+            const newAvatar = data.avatar;
+
+            if (newAvatar && newAvatar !== currentSrc) {
+                avatarEl.innerHTML = buildAvatarContent(channel, data.displayName, newAvatar);
+            } else if (!newAvatar && currentImg) {
+                const letter = (data.displayName || channel).charAt(0).toUpperCase();
+                avatarEl.innerHTML = `<span class="avatar-letter">${escapeHtml(letter)}</span>`;
+            }
+
+            if (data.isLive) {
+                statusEl.className = 'status online';
+                statusTextEl.textContent = 'В ЭФИРЕ';
+                infoEl.classList.remove('hidden');
+                titleEl.textContent = data.title || 'Без названия';
+                gameEl.textContent = data.game || '—';
+                viewersEl.textContent = `${data.viewers.toLocaleString('ru-RU')} зрителей`;
+                card.classList.add('live');
+                startTimer(channel, data.startedAt);
+            } else {
+                statusEl.className = 'status offline';
+                statusTextEl.textContent = 'ОФФЛАЙН';
+                infoEl.classList.add('hidden');
+                card.classList.remove('live');
+                stopTimer(channel);
+            }
+        }
+
+        function startTimer(channel, startedAt) {
+            stopTimer(channel);
+            if (!startedAt) return;
+            const startedMs = new Date(startedAt).getTime();
+            const tick = () => {
+                const card = document.querySelector(`[data-channel="${channel}"]`);
+                if (!card) { stopTimer(channel); return; }
+                const el = card.querySelector('[data-role="duration"]');
+                if (!el) return;
+                el.textContent = formatDuration(Date.now() - startedMs);
+            };
+            tick();
+            state[channel] = state[channel] || {};
+            state[channel].timerId = setInterval(tick, 1000);
+        }
+        function stopTimer(channel) {
+            if (state[channel] && state[channel].timerId) {
+                clearInterval(state[channel].timerId);
+                state[channel].timerId = null;
+            }
+        }
+
+        async function checkChannel(channel) {
+            const data = await fetchStreamStatus(channel);
+            updateCard(channel, data);
+        }
+
+        async function checkAll() {
+            await Promise.all(channels.map(ch => checkChannel(ch)));
+        }
+
+        function addChannel() {
+            const input = document.getElementById('channelInput');
+            const raw = input.value.trim().toLowerCase();
+            if (!raw) return;
+
+            const name = raw.replace(/^https?:\/\/(www\.)?twitch\.tv\//, '').replace(/\/.*$/, '').trim();
+            if (!name) return;
+
+            if (channels.includes(name)) {
+                input.value = '';
+                input.placeholder = 'Этот канал уже в списке!';
+                setTimeout(() => input.placeholder = 'Введите ник канала...', 2000);
+                return;
+            }
+
+            channels.push(name);
+            saveChannels();
+            render();
+            input.value = '';
+            input.blur();
+            checkChannel(name);
+        }
+
+        function removeChannel(channel) {
+            const card = document.querySelector(`[data-channel="${channel}"]`);
+            if (card) {
+                card.classList.add('removing');
+                setTimeout(() => {
+                    channels = channels.filter(c => c !== channel);
+                    saveChannels();
+                    stopTimer(channel);
+                    delete state[channel];
+                    render();
+                }, 380);
+            } else {
+                channels = channels.filter(c => c !== channel);
+                saveChannels();
+                stopTimer(channel);
+                delete state[channel];
+                render();
+            }
+        }
+
+        document.getElementById('channelInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') addChannel();
+        });
+
+        // Обновление при возвращении на вкладку (полезно на мобилке)
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) checkAll();
+        });
+
+        window.addEventListener('load', () => {
+            createParticles();
+            channels = loadChannels();
+            render();
+            checkAll();
+            globalIntervalId = setInterval(() => {
+                if (!document.hidden) checkAll();
+            }, 60000);
+        });
+    </script>
+</body>
+</html>
