@@ -3,203 +3,283 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#0e0e10">
-    <title>Stream Pulse</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#08080c">
+    <meta name="referrer" content="no-referrer">
+    <title>Stream Pulse • Ultimate</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         
-        /* Основной фон и контейнер */
-        body { 
-            background: #0e0e10; 
-            color: #efeff1; 
+        :root {
+            --purple: #9147ff;
+            --purple-light: #bf94ff;
+            --green: #00ff88;
+            --red: #ff4d6d;
+            --bg: #08080c;
+            --glass: rgba(20, 20, 28, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --safe-left: env(safe-area-inset-left, 0px);
+            --safe-right: env(safe-area-inset-right, 0px);
+        }
+
+        html { -webkit-text-size-adjust: 100%; }
+        html, body { min-height: 100%; }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: #efeff1;
             min-height: 100vh;
+            min-height: 100dvh;
             display: flex;
             justify-content: center;
+            padding: calc(20px + var(--safe-top)) calc(16px + var(--safe-right)) calc(20px + var(--safe-bottom)) calc(16px + var(--safe-left));
+            position: relative;
+            overflow-x: hidden;
         }
-        .container { 
-            width: 100%; 
-            max-width: 1400px; 
-            padding: 20px; 
-            padding-bottom: 50px;
-        }
-        
-        h1 { text-align: center; margin-bottom: 20px; color: #fff; font-size: 1.8rem; }
-        
-        /* Поле ввода */
-        .controls { display: flex; gap: 10px; margin-bottom: 20px; }
-        input { 
-            flex: 1; padding: 12px 16px; border-radius: 8px; border: 1px solid #333; 
-            background: #18181b; color: #fff; font-size: 16px; outline: none; 
-        }
-        input:focus { border-color: #9147ff; }
-        button { 
-            padding: 12px 24px; border-radius: 8px; border: none; 
-            background: #9147ff; color: #fff; font-weight: bold; cursor: pointer; 
-            font-size: 16px; transition: background 0.2s;
-        }
-        button:active { background: #7a35e6; }
-        
-        /* Сетка карточек */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; margin-bottom: 30px; }
-        .card { 
-            background: #18181b; border: 1px solid #333; border-radius: 12px; 
-            padding: 16px; display: flex; flex-direction: column; gap: 12px; 
-            transition: border-color 0.3s;
-        }
-        .card.live { border-color: #00ff88; }
-        
-        .card-header { display: flex; justify-content: space-between; align-items: center; }
-        .card-title { font-weight: 800; font-size: 1.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .remove-btn { background: #ff4d6d; padding: 6px 12px; font-size: 12px; border-radius: 6px; }
-        .remove-btn:active { background: #e63e5c; }
-        
-        .status { font-size: 0.9rem; font-weight: bold; color: #ff4d6d; }
-        .card.live .status { color: #00ff88; }
-        
-        .info { display: none; background: #000; padding: 12px; border-radius: 8px; font-size: 0.9rem; }
-        .card.live .info { display: block; }
-        .info-title { font-weight: 600; color: #fff; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .info-game { color: #adadb8; margin-bottom: 6px; }
-        .info-viewers { color: #00ff88; font-weight: bold; }
-        .info-time { color: #bf94ff; margin-top: 6px; }
-        
-        .watch-btn { display: none; width: 100%; background: #9147ff; margin-top: auto; }
-        .card.live .watch-btn { display: block; }
 
-        /* ===== ПЛЕЕР ===== */
-        .player-wrapper { 
-            display: none; 
-            flex-direction: column; 
-            background: #000; 
-            border-radius: 12px; 
-            overflow: hidden; 
-            border: 1px solid #333; 
-            margin-top: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        /* Красивый анимированный фон */
+        .bg-gradient {
+            position: fixed; inset: -50%;
+            background: conic-gradient(from 0deg, #1a0033, #0d0d1a, #2d0a4e, #12001f, #1a0033, #0d0d1a, #2d0a4e, #12001f);
+            animation: rotateBg 30s linear infinite;
+            filter: blur(100px); opacity: 0.45; z-index: 0;
+            will-change: transform;
         }
-        .player-wrapper.active { display: flex; }
+        @keyframes rotateBg { to { transform: rotate(360deg); } }
+
+        .orb { position: fixed; border-radius: 50%; filter: blur(80px); z-index: 0; animation: orbFloat 14s ease-in-out infinite; }
+        .orb-1 { width: 350px; height: 350px; background: radial-gradient(circle, rgba(145,71,255,0.4), transparent 70%); top: -100px; left: -100px; }
+        .orb-2 { width: 300px; height: 300px; background: radial-gradient(circle, rgba(0,255,136,0.15), transparent 70%); bottom: -80px; right: -80px; animation-delay: -6s; }
+        @keyframes orbFloat { 0%, 100% { transform: translate(0,0) scale(1); } 50% { transform: translate(30px, -20px) scale(1.1); } }
+
+        .container { position: relative; z-index: 2; width: 100%; max-width: 1400px; }
+
+        /* Заголовок */
+        .header { text-align: center; margin-bottom: 24px; }
+        .header h1 {
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
+            font-weight: 800; letter-spacing: -1px;
+            background: linear-gradient(135deg, #fff, var(--purple-light));
+            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 4px;
+        }
+        .header p { color: #8a8a95; font-size: 0.9rem; }
+
+        /* Поле ввода */
+        .controls {
+            display: flex; gap: 10px; margin: 0 auto 30px; max-width: 600px;
+        }
+        input {
+            flex: 1; min-width: 0; padding: 14px 18px; border-radius: 14px;
+            border: 1px solid var(--glass-border); background: var(--glass);
+            backdrop-filter: blur(20px); color: #fff; font-size: 16px; font-family: inherit; outline: none;
+            transition: all 0.3s;
+        }
+        input:focus { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(145,71,255,0.2); }
+        .add-btn {
+            padding: 14px 24px; background: linear-gradient(135deg, var(--purple), #6e2bd9);
+            color: #fff; border: none; border-radius: 14px; font-weight: 700; font-size: 0.95rem;
+            cursor: pointer; transition: all 0.2s; white-space: nowrap; box-shadow: 0 4px 15px rgba(145,71,255,0.3);
+        }
+        .add-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+        .add-btn:active { transform: scale(0.98); }
+
+        /* Сетка карточек */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 16px; margin-bottom: 40px; }
+        .card {
+            position: relative; background: var(--glass); backdrop-filter: blur(24px) saturate(140%);
+            border: 1px solid var(--glass-border); border-radius: 20px; padding: 20px;
+            display: flex; flex-direction: column; gap: 14px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: all 0.3s;
+            animation: cardIn 0.4s ease both;
+        }
+        @keyframes cardIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.15); }
+        .card.live { border-color: rgba(0,255,136,0.3); box-shadow: 0 10px 30px rgba(0,0,0,0.3), 0 0 30px rgba(0,255,136,0.1); }
+
+        .card-header { display: flex; align-items: center; gap: 12px; }
+        .avatar {
+            width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #2a1a4e, #1a1a22);
+            display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem;
+            color: var(--purple-light); border: 2px solid rgba(255,255,255,0.1); position: relative;
+        }
+        .card.live .avatar { border-color: var(--green); box-shadow: 0 0 10px rgba(0,255,136,0.3); }
+        .avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
         
-        .player-header { 
-            padding: 12px 16px; 
-            background: #18181b; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
-            border-bottom: 1px solid #333;
+        .card-title-wrap { flex: 1; min-width: 0; }
+        .card-title { font-weight: 800; font-size: 1.05rem; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-handle { font-size: 0.75rem; color: #8a8a95; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        .remove-btn {
+            width: 34px; height: 34px; border-radius: 10px; background: rgba(255,77,109,0.1);
+            border: 1px solid rgba(255,77,109,0.2); color: #ff6b8a; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; transition: all 0.2s;
         }
-        .player-title { font-weight: bold; color: #fff; }
+        .remove-btn:hover { background: rgba(255,77,109,0.2); color: #fff; }
+
+        .status {
+            display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px;
+            border-radius: 20px; font-weight: 700; font-size: 0.75rem; align-self: flex-start;
+            background: rgba(255,77,109,0.1); color: var(--red); border: 1px solid rgba(255,77,109,0.2);
+        }
+        .card.live .status { background: rgba(0,255,136,0.1); color: var(--green); border-color: rgba(0,255,136,0.3); }
+        .status .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+        .card.live .status .dot { animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(0,255,136,0.5); } 70% { box-shadow: 0 0 0 6px rgba(0,255,136,0); } 100% { box-shadow: 0 0 0 0 rgba(0,255,136,0); } }
+
+        .info { display: none; background: rgba(0,0,0,0.3); border-radius: 12px; padding: 12px; font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.05); }
+        .card.live .info { display: block; }
+        .info-title { font-weight: 600; color: #fff; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .info-meta { display: flex; justify-content: space-between; color: #a0a0ad; margin-bottom: 6px; }
+        .info-viewers { color: var(--green); font-weight: 700; }
+        .info-time { display: flex; justify-content: space-between; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.05); color: var(--purple-light); font-weight: 700; }
+
+        .watch-btn {
+            display: none; width: 100%; padding: 12px; background: var(--purple); color: #fff;
+            border: none; border-radius: 12px; font-weight: 700; font-size: 0.9rem; cursor: pointer;
+            transition: all 0.2s; margin-top: auto;
+        }
+        .card.live .watch-btn { display: block; }
+        .watch-btn:hover { background: #7a35e6; }
+
+        /* ===== ЗОНА ПЛЕЕРОВ ===== */
+        .streams-section { display: none; }
+        .streams-section.active { display: block; animation: cardIn 0.5s ease both; }
+        
+        .streams-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .streams-header h2 { font-size: 1.3rem; color: #fff; display: flex; align-items: center; gap: 10px; }
+        .close-all-btn { background: rgba(255,77,109,0.15); border: 1px solid rgba(255,77,109,0.3); color: #ff6b8a; padding: 8px 16px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .close-all-btn:hover { background: rgba(255,77,109,0.25); color: #fff; }
+
+        .players-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 20px; }
+
+        .player-wrapper {
+            background: #000; border-radius: 16px; overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+            display: flex; flex-direction: column;
+        }
+        .player-header { padding: 12px 16px; background: #18181b; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .player-title { font-weight: 700; font-size: 0.9rem; color: #fff; display: flex; align-items: center; gap: 8px; }
+        .player-title::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); }
+        .player-close { background: rgba(255,255,255,0.1); border: none; color: #fff; width: 28px; height: 28px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+        .player-close:hover { background: var(--red); }
         
         .player-body { display: flex; flex-direction: column; width: 100%; }
-        
-        /* Видео */
         .video-box { width: 100%; aspect-ratio: 16/9; background: #000; position: relative; }
-        .video-box iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
-        
-        /* Чат */
-        .chat-box { width: 100%; height: 400px; background: #18181b; border-top: 1px solid #333; position: relative; }
-        .chat-box iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        .video-box iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
+        .chat-box { width: 100%; height: 400px; background: #18181b; border-top: 1px solid rgba(255,255,255,0.05); position: relative; }
+        .chat-box iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
 
-        /* ===== АДАПТИВ ПОД ПК ===== */
-        @media (min-width: 900px) {
+        /* ===== ПК: Видео слева, чат справа ===== */
+        @media (min-width: 1100px) {
             .player-body { flex-direction: row; }
-            .video-box { width: 70%; aspect-ratio: auto; height: 500px; }
-            .chat-box { width: 30%; height: 500px; border-top: none; border-left: 1px solid #333; }
+            .video-box { width: 70%; aspect-ratio: auto; height: 450px; }
+            .chat-box { width: 30%; height: 450px; border-top: none; border-left: 1px solid rgba(255,255,255,0.05); }
         }
 
-        /* ===== АДАПТИВ ПОД ТЕЛЕФОН ===== */
-        @media (max-width: 899px) {
+        /* ===== ТЕЛЕФОН: Как в приложении ===== */
+        @media (max-width: 999px) {
+            .players-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 600px) {
             .container { padding: 10px; }
-            h1 { font-size: 1.4rem; margin-bottom: 15px; }
             .controls { flex-direction: column; gap: 8px; }
-            input, button { width: 100%; padding: 14px; }
+            input, .add-btn { width: 100%; padding: 14px; }
             .grid { grid-template-columns: 1fr; }
+            .player-wrapper { border-radius: 12px; }
+            .player-body { flex-direction: column; }
             .video-box { aspect-ratio: 16/9; }
-            .chat-box { height: 450px; } /* Высота чата как в приложении */
+            .chat-box { height: 450px; border-top: 1px solid rgba(255,255,255,0.05); border-left: none; }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>Stream Pulse</h1>
-    
-    <div class="controls">
-        <input type="text" id="channelInput" placeholder="Введите ник (например, frik0vna)" autocomplete="off">
-        <button onclick="addChannel()">Добавить</button>
-    </div>
+    <div class="bg-gradient"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
 
-    <div class="grid" id="grid"></div>
-
-    <!-- Блок плеера -->
-    <div class="player-wrapper" id="playerWrapper">
-        <div class="player-header">
-            <span class="player-title" id="playerTitle">Плеер</span>
-            <button class="remove-btn" onclick="closePlayer()">Закрыть</button>
+    <div class="container">
+        <div class="header">
+            <h1>Stream Pulse</h1>
+            <p>Твой личный центр управления стримами</p>
         </div>
-        <div class="player-body">
-            <div class="video-box" id="videoBox"></div>
-            <div class="chat-box" id="chatBox"></div>
+        
+        <div class="controls">
+            <input type="text" id="channelInput" placeholder="Введите ник (например, frik0vna)" autocomplete="off">
+            <button class="add-btn" onclick="addChannel()">+ Добавить</button>
+        </div>
+
+        <div class="grid" id="grid"></div>
+
+        <div class="streams-section" id="streamsSection">
+            <div class="streams-header">
+                <h2>Смотрим сейчас <span id="streamsCount" style="color: var(--purple-light); font-size: 1rem;">(0)</span></h2>
+                <button class="close-all-btn" onclick="closeAllPlayers()">Закрыть все</button>
+            </div>
+            <div class="players-grid" id="playersGrid"></div>
         </div>
     </div>
-</div>
 
 <script>
     const CLIENT_ID = 'kimne78kx3ncx6brgo4mv6wki5h1ko';
     const PARENT = 'kingjo226.github.io';
     
-    // Загружаем каналы из памяти или ставим дефолтный
     let channels = JSON.parse(localStorage.getItem('twitch_channels')) || ['frik0vna'];
-    
-    // Чтобы не было багов с таймерами на телефоне
     let timers = {};
-    let currentActive = null;
+    let openPlayers = new Set(JSON.parse(localStorage.getItem('twitch_open')) || []);
 
-    function save() { localStorage.setItem('twitch_channels', JSON.stringify(channels)); }
+    function saveChannels() { localStorage.setItem('twitch_channels', JSON.stringify(channels)); }
+    function saveOpen() { localStorage.setItem('twitch_open', JSON.stringify([...openPlayers])); }
     function escapeHTML(str) { return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); }
 
+    // ===== ДОБАВЛЕНИЕ / УДАЛЕНИЕ =====
     function addChannel() {
         const input = document.getElementById('channelInput');
-        const name = input.value.trim().toLowerCase();
+        const name = input.value.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
         if (!name || channels.includes(name)) return;
         
         channels.push(name);
-        save();
+        saveChannels();
         input.value = '';
-        render();
+        renderChannels();
     }
 
     function removeChannel(name) {
         channels = channels.filter(c => c !== name);
-        save();
-        if (currentActive === name) closePlayer();
+        saveChannels();
+        closePlayer(name);
         if (timers[name]) { clearInterval(timers[name]); delete timers[name]; }
-        render();
+        renderChannels();
     }
 
-    // ===== ЛОГИКА ПЛЕЕРА =====
+    // ===== ПЛЕЕРЫ =====
     function openPlayer(name) {
-        currentActive = name;
-        document.getElementById('playerWrapper').classList.add('active');
-        document.getElementById('playerTitle').innerText = 'Смотрим: ' + name;
-        
-        // Встраиваем видео и чат
-        document.getElementById('videoBox').innerHTML = `<iframe src="https://player.twitch.tv/?channel=${name}&parent=${PARENT}&autoplay=true&muted=true" allowfullscreen allow="autoplay; fullscreen"></iframe>`;
-        document.getElementById('chatBox').innerHTML = `<iframe src="https://www.twitch.tv/embed/${name}/chat?parent=${PARENT}&darkpopout"></iframe>`;
-        
-        // Плавный скролл к плееру
-        document.getElementById('playerWrapper').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        openPlayers.add(name);
+        saveOpen();
+        renderPlayers();
     }
 
-    function closePlayer() {
-        currentActive = null;
-        document.getElementById('playerWrapper').classList.remove('active');
-        document.getElementById('videoBox').innerHTML = ''; // Удаляем iframe, чтобы не жрал ресурсы
-        document.getElementById('chatBox').innerHTML = '';
+    function closePlayer(name) {
+        openPlayers.delete(name);
+        saveOpen();
+        renderPlayers();
     }
 
-    // ===== ОТРИСОВКА КАРТОЧЕК =====
-    function render() {
+    function closeAllPlayers() {
+        openPlayers.clear();
+        saveOpen();
+        renderPlayers();
+    }
+
+    // ===== ОТРИСОВКА КАНАЛОВ =====
+    function renderChannels() {
         const grid = document.getElementById('grid');
         grid.innerHTML = '';
         
@@ -209,15 +289,18 @@
             card.id = 'card_' + name;
             card.innerHTML = `
                 <div class="card-header">
-                    <div class="card-title">${escapeHTML(name)}</div>
+                    <div class="avatar" id="avatar_${name}">${escapeHTML(name.charAt(0).toUpperCase())}</div>
+                    <div class="card-title-wrap">
+                        <div class="card-title">${escapeHTML(name)}</div>
+                        <div class="card-handle">twitch.tv/${escapeHTML(name)}</div>
+                    </div>
                     <button class="remove-btn" onclick="removeChannel('${escapeHTML(name)}')">✕</button>
                 </div>
-                <div class="status" id="status_${name}">Проверка...</div>
+                <div class="status" id="status_${name}"><span class="dot"></span> Проверка...</div>
                 <div class="info">
                     <div class="info-title" id="title_${name}">Загрузка...</div>
-                    <div class="info-game" id="game_${name}"></div>
-                    <div class="info-viewers" id="viewers_${name}"></div>
-                    <div class="info-time" id="time_${name}">00:00:00</div>
+                    <div class="info-meta"><span id="game_${name}">—</span><span class="info-viewers" id="viewers_${name}">0</span></div>
+                    <div class="info-time"><span>Длительность</span><span id="time_${name}">00:00:00</span></div>
                 </div>
                 <button class="watch-btn" onclick="openPlayer('${escapeHTML(name)}')">▶ Смотреть</button>
             `;
@@ -226,10 +309,54 @@
         });
     }
 
-    // ===== ПОЛУЧЕНИЕ СТАТУСА ОТ TWITCH =====
+    // ===== ОТРИСОВКА ПЛЕЕРОВ =====
+    function renderPlayers() {
+        const section = document.getElementById('streamsSection');
+        const grid = document.getElementById('playersGrid');
+        const countEl = document.getElementById('streamsCount');
+        
+        if (openPlayers.size === 0) {
+            section.classList.remove('active');
+            grid.innerHTML = '';
+            return;
+        }
+        
+        section.classList.add('active');
+        countEl.innerText = `(${openPlayers.size})`;
+        
+        Array.from(grid.children).forEach(el => {
+            const name = el.id.replace('player_', '');
+            if (!openPlayers.has(name)) el.remove();
+        });
+
+        openPlayers.forEach(name => {
+            if (document.getElementById('player_' + name)) return;
+            
+            const wrapper = document.createElement('div');
+            wrapper.className = 'player-wrapper';
+            wrapper.id = 'player_' + name;
+            wrapper.innerHTML = `
+                <div class="player-header">
+                    <div class="player-title">${escapeHTML(name)}</div>
+                    <button class="player-close" onclick="closePlayer('${escapeHTML(name)}')">✕</button>
+                </div>
+                <div class="player-body">
+                    <div class="video-box">
+                        <iframe src="https://player.twitch.tv/?channel=${name}&parent=${PARENT}&autoplay=true&muted=true" allowfullscreen allow="autoplay; fullscreen"></iframe>
+                    </div>
+                    <div class="chat-box">
+                        <iframe src="https://www.twitch.tv/embed/${name}/chat?parent=${PARENT}&darkpopout"></iframe>
+                    </div>
+                </div>
+            `;
+            grid.appendChild(wrapper);
+        });
+    }
+
+    // ===== API TWITCH =====
     async function checkStatus(name) {
         const query = {
-            query: `query($login: String!) { user(login: $login) { displayName stream { title viewersCount createdAt game { name } } } }`,
+            query: `query($login: String!) { user(login: $login) { displayName profileImageURL(width: 100) stream { title viewersCount createdAt game { name } } } }`,
             variables: { login: name }
         };
         
@@ -246,20 +373,24 @@
             if (!card) return;
 
             if (!user) {
-                document.getElementById('status_' + name).innerText = 'Не найден';
+                document.getElementById('status_' + name).innerHTML = '<span class="dot"></span> Не найден';
                 card.classList.remove('live');
                 return;
+            }
+
+            const avatarEl = document.getElementById('avatar_' + name);
+            if (user.profileImageURL && !avatarEl.querySelector('img')) {
+                avatarEl.innerHTML = `<img src="${user.profileImageURL}" referrerpolicy="no-referrer" onerror="this.style.display='none'">`;
             }
 
             const stream = user.stream;
             if (stream) {
                 card.classList.add('live');
-                document.getElementById('status_' + name).innerText = 'В ЭФИРЕ';
+                document.getElementById('status_' + name).innerHTML = '<span class="dot"></span> В ЭФИРЕ';
                 document.getElementById('title_' + name).innerText = stream.title;
                 document.getElementById('game_' + name).innerText = stream.game ? stream.game.name : 'Без категории';
                 document.getElementById('viewers_' + name).innerText = stream.viewersCount + ' зрителей';
                 
-                // Запускаем таймер, только если его еще нет (защита от лагов)
                 if (!timers[name]) {
                     const start = new Date(stream.createdAt).getTime();
                     timers[name] = setInterval(() => {
@@ -276,22 +407,27 @@
 
             } else {
                 card.classList.remove('live');
-                document.getElementById('status_' + name).innerText = 'ОФФЛАЙН';
+                document.getElementById('status_' + name).innerHTML = '<span class="dot"></span> ОФФЛАЙН';
                 if (timers[name]) { clearInterval(timers[name]); delete timers[name]; }
             }
         } catch (e) {
             const statusEl = document.getElementById('status_' + name);
-            if (statusEl) statusEl.innerText = 'Ошибка сети';
+            if (statusEl) statusEl.innerHTML = '<span class="dot"></span> Ошибка';
         }
     }
 
-    // Слушатели событий
     document.getElementById('channelInput').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') addChannel();
     });
 
-    // Запуск при загрузке
-    render();
+    // Запуск
+    renderChannels();
+    renderPlayers();
+    setInterval(() => {
+        if (!document.hidden) {
+            channels.forEach(name => checkStatus(name));
+        }
+    }, 60000);
 </script>
 </body>
 </html>
