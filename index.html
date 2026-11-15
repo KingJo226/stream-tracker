@@ -45,22 +45,22 @@
             width: 48px; height: 48px; border-radius: 50%;
             background: #2a2a2d; display: flex; align-items: center; justify-content: center;
             font-weight: 800; font-size: 1.2rem; color: var(--purple-light);
-            overflow: hidden; border: 2px solid transparent;
+            overflow: hidden; border: 2px solid transparent; flex-shrink: 0;
         }
         .card.live .avatar { border-color: var(--green); }
-        .avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
         .card-title-wrap { flex: 1; min-width: 0; }
         .card-title { font-weight: 800; font-size: 1rem; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .card-handle { font-size: 0.75rem; color: #adadb8; }
+        .card-handle { font-size: 0.75rem; color: #adadb8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        .remove-btn { width: 32px; height: 32px; border-radius: 8px; background: rgba(255, 77, 109, 0.1); border: none; color: #ff4d6d; cursor: pointer; }
+        .remove-btn { width: 32px; height: 32px; border-radius: 8px; background: rgba(255, 77, 109, 0.1); border: none; color: #ff4d6d; cursor: pointer; flex-shrink: 0; }
         .status { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 6px; font-weight: bold; font-size: 0.75rem; background: rgba(255, 77, 109, 0.1); color: var(--red); align-self: flex-start; }
         .card.live .status { background: rgba(0, 255, 136, 0.1); color: var(--green); }
         
         .info { display: none; background: #000; border-radius: 8px; padding: 12px; font-size: 0.85rem; }
         .card.live .info { display: block; }
-        .info-title { font-weight: 600; color: #fff; margin-bottom: 8px; }
+        .info-title { font-weight: 600; color: #fff; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .info-meta { display: flex; justify-content: space-between; color: #adadb8; margin-bottom: 6px; }
         .info-viewers { color: var(--green); font-weight: bold; }
         .info-time { display: flex; justify-content: space-between; padding-top: 8px; border-top: 1px solid var(--border); color: var(--purple-light); font-weight: bold; }
@@ -297,11 +297,16 @@
                 document.getElementById('status_' + name).innerText = 'Не найден'; card.classList.remove('live'); return;
             }
 
-            // Загрузка аватарки
+            // === ИСПРАВЛЕННАЯ ЗАГРУЗКА АВАТАРКИ (ЧЕРЕЗ ПРОКСИ) ===
             const avatarEl = document.getElementById('avatar_' + name);
             if (user.profileImageURL && !avatarEl.querySelector('img')) {
-                avatarEl.innerHTML = `<img src="${user.profileImageURL}" referrerpolicy="no-referrer" onerror="this.style.display='none'">`;
+                // Используем сервис weserv.nl для обхода блокировок CDN Twitch
+                const proxiedUrl = `https://images.weserv.nl/?url=${encodeURIComponent(user.profileImageURL.replace('https://', ''))}`;
+                
+                avatarEl.innerHTML = `<img src="${proxiedUrl}" alt="${name}" referrerpolicy="no-referrer" 
+                    onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=${name}&background=9147ff&color=fff&size=100&bold=true'">`;
             }
+            // ======================================================
 
             const stream = user.stream;
             if (stream) {
