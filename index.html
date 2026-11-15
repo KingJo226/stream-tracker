@@ -158,7 +158,6 @@
            ПК ВЕРСИЯ (Красивая)
            ========================================= */
         @media (min-width: 1100px) {
-            /* Включаем эффекты стекла только на ПК */
             .card {
                 background: rgba(24, 24, 27, 0.6);
                 backdrop-filter: blur(12px);
@@ -170,10 +169,9 @@
         }
 
         /* =========================================
-           ТЕЛЕФОН (Максимальная скорость)
+           ТЕЛЕФОН (Максимальная скорость и исправление плеера)
            ========================================= */
         @media (max-width: 1099px) {
-            /* Отключаем тяжелый блюр на телефонах */
             .card {
                 background: var(--card-bg) !important;
                 backdrop-filter: none !important;
@@ -182,6 +180,12 @@
             }
             .players-grid { grid-template-columns: 1fr; }
             .player-body { flex-direction: column; }
+            
+            /* Даем плееру больше высоты на планшетах/мобилках, чтобы не обрезались кнопки */
+            .video-box { 
+                height: 300px; 
+                aspect-ratio: auto; 
+            }
         }
 
         @media (max-width: 600px) {
@@ -190,7 +194,13 @@
             .controls { flex-direction: column; gap: 8px; }
             input, .add-btn { width: 100%; padding: 14px; }
             .grid { grid-template-columns: 1fr; }
-            .chat-box { height: 450px; }
+            
+            /* Фиксированная высота видео для телефонов, чтобы поместились все настройки Twitch */
+            .video-box { 
+                height: 240px; 
+                aspect-ratio: auto; 
+            }
+            .chat-box { height: 420px; }
         }
     </style>
 </head>
@@ -310,7 +320,7 @@
                 </div>
                 <div class="player-body">
                     <div class="video-box">
-                        <iframe src="https://player.twitch.tv/?channel=${name}&parent=${PARENT}&autoplay=true&muted=true" allowfullscreen allow="autoplay; fullscreen"></iframe>
+                        <iframe src="https://player.twitch.tv/?channel=${name}&parent=${PARENT}&autoplay=true&muted=true&controls=true" allowfullscreen allow="autoplay; fullscreen"></iframe>
                     </div>
                     <div class="chat-box">
                         <iframe src="https://www.twitch.tv/embed/${name}/chat?parent=${PARENT}&darkpopout"></iframe>
