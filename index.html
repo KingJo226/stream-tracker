@@ -222,7 +222,7 @@
     const CLIENT_ID = 'kimne78kx3ncx6brgo4mv6wki5h1ko';
     const PARENT = 'kingjo226.github.io';
     
-    let channels = JSON.parse(localStorage.getItem('twitch_channels')) || ['frik0vna'];
+    let channels = JSON.parse(localStorage.getItem('twitch_channels')) || [];
     let timers = {};
     let openPlayers = new Set(JSON.parse(localStorage.getItem('twitch_open')) || []);
 
