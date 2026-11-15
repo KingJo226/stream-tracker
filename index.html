@@ -4,10 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#0e0e10">
+    
+    <!-- 1. Убираем блокирующий favicon запрос (ставим пустую иконку) -->
+    <link rel="icon" href="data:,">
+
+    <!-- 2. Шрифты: preload + асинхронная загрузка -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Грузим только нужный вес (400) асинхронно -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"></noscript>
+
     <title>Stream Pulse</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    <script src="https://player.twitch.tv/js/embed/v1.js"></script>
+    
     <style>
+        /* ... ТВОИ СТИЛИ ОСТАЮТСЯ БЕЗ ИЗМЕНЕНИЙ ... */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         
         :root {
@@ -40,7 +52,6 @@
 
         .card-header { display: flex; align-items: center; gap: 12px; }
         
-        /* Аватарка */
         .avatar {
             width: 48px; height: 48px; border-radius: 50%;
             background: #2a2a2d; display: flex; align-items: center; justify-content: center;
@@ -140,9 +151,15 @@
     </div>
 </div>
 
+<!-- 3. Скрипт Twitch SDK теперь грузится асинхронно в конце body -->
+<script src="https://player.twitch.tv/js/embed/v1.js" async></script>
+
 <script>
+    // ... ВЕСЬ ТВОЙ JS КОД ОСТАЕТСЯ БЕЗ ИЗМЕНЕНИЙ ...
+    // (он уже не зависит от того, когда загрузился Twitch, так как плееры создаются по клику)
+    
     const CLIENT_ID = 'kimne78kx3ncx6brgo4mv6wki5h1ko';
-    const PARENT = 'kingjo226.github.io';
+    const PARENT = 'stream-tracker.layero.app'; // ВАЖНО: замени на свой домен Layero!
     
     let channels = JSON.parse(localStorage.getItem('twitch_channels')) || [];
     let timers = {};
@@ -297,16 +314,12 @@
                 document.getElementById('status_' + name).innerText = 'Не найден'; card.classList.remove('live'); return;
             }
 
-            // === ИСПРАВЛЕННАЯ ЗАГРУЗКА АВАТАРКИ (ЧЕРЕЗ ПРОКСИ) ===
             const avatarEl = document.getElementById('avatar_' + name);
             if (user.profileImageURL && !avatarEl.querySelector('img')) {
-                // Используем сервис weserv.nl для обхода блокировок CDN Twitch
                 const proxiedUrl = `https://images.weserv.nl/?url=${encodeURIComponent(user.profileImageURL.replace('https://', ''))}`;
-                
                 avatarEl.innerHTML = `<img src="${proxiedUrl}" alt="${name}" referrerpolicy="no-referrer" 
                     onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=${name}&background=9147ff&color=fff&size=100&bold=true'">`;
             }
-            // ======================================================
 
             const stream = user.stream;
             if (stream) {
