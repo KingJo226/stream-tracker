@@ -6,7 +6,6 @@
     <meta name="theme-color" content="#0e0e10">
     <link rel="icon" href="data:,">
     
-    <!-- Шрифты (оставлен один вес для скорости) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;800&display=swap">
@@ -207,7 +206,6 @@
 
 <div class="toast-container" id="toastContainer"></div>
 
-<!-- SDK Twitch грузится асинхронно -->
 <script src="https://player.twitch.tv/js/embed/v1.js" async></script>
 
 <script>
@@ -349,14 +347,14 @@
                 </div>
                 <div class="player-body">
                     <div class="video-container" id="video_container_${name}"></div>
-                    <div class="chat-box">
-                        <iframe src="https://www.twitch.tv/embed/${name}/chat?parent=${PARENT}&darkpopout"></iframe>
-                    </div>
+                    <div class="chat-box" id="chat_container_${name}"></div>
                 </div>
             `;
             grid.appendChild(wrapper);
             
+            // Задержка нужна, чтобы DOM обновился перед вставкой iframe
             setTimeout(() => {
+                // 1. Плеер
                 if (typeof Twitch !== 'undefined') {
                     const player = new Twitch.Player("video_container_" + name, {
                         width: "100%", height: "100%", channel: name, parent: [PARENT], autoplay: true, muted: false
@@ -364,7 +362,22 @@
                     player.addEventListener(Twitch.Player.READY, () => { player.setVolume(0); });
                     twitchPlayers[name] = player;
                 }
-            }, 200); // Увеличили задержку, чтобы SDK точно успел загрузиться
+
+                // 2. Чат (вставляем через JS, чтобы точно не было конфликтов)
+                const chatContainer = document.getElementById('chat_container_' + name);
+                if (chatContainer) {
+                    const iframe = document.createElement('iframe');
+                    // Убрали все лишние параметры, оставили только parent и darkpopout
+                    iframe.src = `https://www.twitch.tv/embed/${name}/chat?parent=${PARENT}&darkpopout`;
+                    iframe.allowFullscreen = true;
+                    iframe.style.border = 'none';
+                    iframe.style.width = '100%';
+                    iframe.style.height = '100%';
+                    iframe.style.position = 'absolute';
+                    iframe.style.inset = '0';
+                    chatContainer.appendChild(iframe);
+                }
+            }, 300); // Увеличили до 300мс для надежности
         });
     }
 
