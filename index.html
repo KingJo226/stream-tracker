@@ -5,11 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#0e0e10">
     <link rel="icon" href="data:,">
+    
+    <!-- Оптимизация шрифтов: только один вес (400) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;800&display=swap">
+    
     <title>Stream Pulse</title>
-    <script src="https://player.twitch.tv/js/embed/v1.js" defer></script>
     
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -226,7 +228,6 @@
     let timers = {};
     let twitchPlayers = {};
 
-    // ===== Утилиты =====
     const save = () => { localStorage.setItem(STORAGE_KEY, JSON.stringify(channels)); localStorage.setItem(OPEN_KEY, JSON.stringify([...openPlayers])); };
     const escapeHTML = (str) => str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
     
@@ -239,7 +240,6 @@
         setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
     }
 
-    // ===== Управление каналами =====
     function addChannelToState(name) {
         const cleanName = name.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
         if (!cleanName) return false;
@@ -287,7 +287,6 @@
         showToast('Канал удален');
     }
 
-    // ===== Отрисовка =====
     function renderChannels() {
         const grid = document.getElementById('grid');
         const emptyState = document.getElementById('emptyState');
@@ -359,7 +358,7 @@
                 <div class="player-body">
                     <div class="video-container" id="video_container_${name}"></div>
                     <div class="chat-box">
-                        <iframe src="https://www.twitch.tv/embed/${name}/chat?parent=${PARENT}&darkpopout" title="Чат канала ${escapeHTML(name)}"></iframe>
+                        <iframe src="https://www.twitch.tv/embed/${name}/chat?parent=${PARENT}&darkpopout"></iframe>
                     </div>
                 </div>
             `;
@@ -398,7 +397,6 @@
         openPlayers.clear(); save(); renderPlayers();
     }
 
-    // ===== API =====
     async function checkStatus(name) {
         const query = {
             query: `query($login: String!) { user(login: $login) { displayName profileImageURL(width: 100) stream { title viewersCount createdAt game { name } } } }`,
@@ -458,7 +456,6 @@
         }
     }
 
-    // Инициализация
     document.getElementById('channelInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') addSingleChannel(); });
 
     renderChannels();
